@@ -1,0 +1,63 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using _1_UNFV.PF.Entidades;
+using _2_UNFV.PF.Interfaces;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace _3_UNFV.PF.DataAccess
+{
+    public class ProyectoData:IAccesoDatos
+    {
+        public string StringConnection = String.Empty;
+
+        public ProyectoData()
+        {
+            this.StringConnection = ConfigurationManager.ConnectionStrings["cnDemoObjetos"].ToString();
+        }
+
+        int IAccesoDatos.Registrar(ClaseMaster ObjMaster)
+        {
+            SqlCommand Comando = null;
+            int Rpta = -1;
+
+            using (SqlConnection Connection = new SqlConnection(StringConnection))
+            {
+                Connection.Open();
+                Comando = new SqlCommand("Proyecto_Insertar", Connection);
+                Comando.CommandType = CommandType.StoredProcedure;
+
+                Comando.Parameters.Add("@NombreProyecto", SqlDbType.VarChar,50).Value = ObjMaster.EntidadProyecto[0].NombreProyecto;
+                Comando.Parameters.Add("@ProductividadCreacion", SqlDbType.Int).Value = ObjMaster.EntidadProyecto[0].ProductividadCreacion;
+                Comando.Parameters.Add("@ProductividadModificacion", SqlDbType.Int).Value = ObjMaster.EntidadProyecto[0].ProductividadModificacion;
+                Comando.Parameters.Add("@FechaCreacion", SqlDbType.Date).Value = ObjMaster.EntidadProyecto[0].FechaCreacion;
+                Comando.Parameters.Add("@UsuarioCreacion", SqlDbType.VarChar, 25).Value = ObjMaster.EntidadProyecto[0].Usuario;
+                try
+                {
+                    Comando.CommandTimeout = 900;
+                    Comando.ExecuteNonQuery();
+                    //Rpta = Convert.ToInt32(Comando.Parameters["@CodigoProducto"].Value.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Rpta = -1;
+                }
+            }
+            return Rpta;
+        }
+
+        int IAccesoDatos.Actualizar(ClaseMaster ObjMaster)
+        {
+            throw new NotImplementedException();
+        }
+
+        int IAccesoDatos.Eliminar(ClaseMaster ObjMaster)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
